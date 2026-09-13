@@ -34,6 +34,8 @@ h1 .latin{display:block;font-family:var(--goth);font-weight:300;font-size:clamp(
 .btn.mincho{font-family:var(--mincho);letter-spacing:.34em;text-indent:.34em;font-size:15px}
 .foot{position:absolute;bottom:max(20px,env(safe-area-inset-bottom));font-size:9.5px;letter-spacing:.3em;color:rgba(232,220,192,.4);font-weight:300}
 @media (max-aspect-ratio:3/4){ .ov{justify-content:flex-start;padding-top:11vh} }
+@media (min-aspect-ratio:4/3){ #menu{justify-content:flex-start;padding-top:11vh}
+ #end{justify-content:flex-start;padding-top:5vh} }
 #end h2{font-family:var(--mincho);font-weight:600;font-size:clamp(15px,3vw,22px);letter-spacing:.4em;color:var(--gold);text-indent:.4em}
 #score{font-weight:200;font-size:clamp(72px,17vw,128px);line-height:1;color:var(--cream);margin:10px 0 4px;letter-spacing:.02em}
 #rank{font-family:var(--mincho);font-size:clamp(20px,4.6vw,30px);color:var(--verm);background:var(--cream);
@@ -478,7 +480,8 @@ function frame(now){
  hitGlow=Math.max(0,hitGlow-dt*3);hitFlash=Math.max(0,hitFlash-dt*4);
  /* draw */
  drawSky(t);drawLanterns(t);drawCrowd(t);drawStage();
- const dcx=W*.5,dcy=state==='play'?H*.5:H*.575,dr=Math.min(W,H)*.15;
+ const wide=W/H>1.05;
+ const dcx=W*.5,dcy=state==='play'?H*.5:(wide?H*.7:H*.575),dr=Math.min(W,H)*(state==='play'?.15:(wide?.135:.15));
  drawCat(dcx-dr*1.9,dcy+dr*.9,Math.min(W,H)/430,t);
  drawDrum(dcx,dcy,dr,t);
  if(state==='play'){drawLane(t);drawHUD();}
