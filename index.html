@@ -478,7 +478,7 @@ function frame(now){
  hitGlow=Math.max(0,hitGlow-dt*3);hitFlash=Math.max(0,hitFlash-dt*4);
  /* draw */
  drawSky(t);drawLanterns(t);drawCrowd(t);drawStage();
- const dcx=W*.5,dcy=H*.5,dr=Math.min(W,H)*.15;
+ const dcx=W*.5,dcy=state==='play'?H*.5:H*.575,dr=Math.min(W,H)*.15;
  drawCat(dcx-dr*1.9,dcy+dr*.9,Math.min(W,H)/430,t);
  drawDrum(dcx,dcy,dr,t);
  if(state==='play'){drawLane(t);drawHUD();}
