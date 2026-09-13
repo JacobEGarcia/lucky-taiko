@@ -241,7 +241,7 @@ function drawSky(t){
  ctx.fillStyle=C.cream;ctx.beginPath();ctx.arc(mx,my,mr,0,7);ctx.fill();
  ctx.fillStyle='rgba(200,190,160,.5)';ctx.beginPath();ctx.arc(mx-mr*.3,my-mr*.15,mr*.22,0,7);ctx.fill();ctx.beginPath();ctx.arc(mx+mr*.25,my+mr*.3,mr*.14,0,7);ctx.fill();}
 function drawLanterns(t){
- const y0=H*.045,n=Math.max(4,Math.round(W/150));
+ const y0=H*(W<H?.078:.045),n=Math.max(4,Math.round(W/150));
  ctx.strokeStyle='rgba(20,18,26,.9)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,y0-6);
  ctx.quadraticCurveTo(W/2,y0+26,W,y0-6);ctx.stroke();
  for(let i=0;i<n;i++){const u=(i+.5)/n,lx=u*W,ly=y0-6+Math.sin(u*Math.PI)*22+8;
