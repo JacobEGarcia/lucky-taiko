@@ -56,6 +56,7 @@ h1 .latin{display:block;font-family:var(--goth);font-weight:300;font-size:clamp(
 #card .inner{max-width:min(560px,96vw);text-align:center}
 #card img{width:100%;border:1px solid rgba(217,164,65,.4);display:block}
 #card .row{display:flex;gap:10px;justify-content:center;margin-top:16px}
+@media (max-width:560px){ #hint{bottom:max(64px,calc(env(safe-area-inset-bottom) + 52px))} }
 </style>
 </head>
 <body>
@@ -205,7 +206,7 @@ function strike(side){ /* side: 'don' | 'kat' */
   if(ryo){nRyo++;score+=300+Math.min(combo,50)*2;soul=Math.min(1,soul+.022);}
   else{nKa++;score+=150;soul=Math.min(1,soul+.01);}
   combo++;maxCombo=Math.max(maxCombo,combo);
-  pops.push({t:0,txt:ryo?'良':'可',c:ryo?C.gold:'#cfd6e4',x:hitX(),y:laneY()-46});
+  pops.push({t:0,txt:ryo?'良':'可',c:ryo?C.gold:'#e6d9bd',x:hitX(),y:laneY()-46});
   burst(hitX(),laneY(),ryo?C.gold:'#cfd6e4',ryo?14:7);
   hitGlow=1;if(ryo)hitFlash=.6;
   if(combo%25===0){hop=1;pops.push({t:0,txt:'にゃ!',c:C.cream,x:W*.5,y:H*.4});}
@@ -352,6 +353,7 @@ function drawLane(t){
    ctx.strokeStyle=C.gold;ctx.lineWidth=5;ctx.beginPath();ctx.arc(x,y,17,0,7);ctx.stroke();
    ctx.strokeStyle='rgba(242,230,196,.7)';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(x,y,17,0,7);ctx.stroke();}
   if(ahead<KA*2.2&&ahead>0){ctx.strokeStyle=`rgba(242,230,196,${.25-ahead})`;ctx.lineWidth=1;ctx.beginPath();ctx.arc(x,y,23,0,7);ctx.stroke();}}}
+function pill(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 function drawHUD(){
  ctx.textBaseline='alphabetic';
  ctx.textAlign='left';
@@ -360,11 +362,14 @@ function drawHUD(){
  ctx.font=`300 9px ${GOTH}`;ctx.fillStyle='rgba(232,220,192,.6)';
  ctx.fillText('K O B A N',23,58);
  /* soul gauge */
- ctx.textAlign='right';ctx.font=`300 9px ${GOTH}`;ctx.fillStyle='rgba(232,220,192,.6)';
- ctx.fillText('魂',W-22,34);
- ctx.strokeStyle='rgba(242,230,196,.3)';ctx.lineWidth=1;ctx.strokeRect(W-142,40,120,5);
- const sg=ctx.createLinearGradient(W-142,0,W-22,0);sg.addColorStop(0,C.verm);sg.addColorStop(1,C.gold);
- ctx.fillStyle=sg;ctx.fillRect(W-142,40,120*soul,5);
+ const gx=W-158,gy=28,gw=132,gh=9;
+ ctx.textAlign='right';ctx.font=`300 12px ${MINCHO}`;ctx.fillStyle=C.gold;
+ ctx.fillText('魂',gx-9,gy+gh);
+ ctx.fillStyle='rgba(16,11,8,.6)';pill(gx,gy,gw,gh,4.5);ctx.fill();
+ ctx.strokeStyle='rgba(217,164,65,.5)';ctx.lineWidth=1;pill(gx,gy,gw,gh,4.5);ctx.stroke();
+ if(soul>0){const iw=Math.max((gw-4)*soul,3);const sg=ctx.createLinearGradient(gx,0,gx+gw,0);sg.addColorStop(0,C.verm);sg.addColorStop(1,C.gold);
+  ctx.fillStyle=sg;pill(gx+2,gy+2,iw,gh-4,2.5);ctx.fill();
+  ctx.fillStyle='rgba(255,240,190,.9)';ctx.beginPath();ctx.arc(gx+2+iw,gy+gh/2,1.7,0,7);ctx.fill();}
  /* combo */
  if(combo>1){ctx.textAlign='center';
   ctx.fillStyle=C.cream;ctx.font=`300 ${combo>=50?34:28}px ${GOTH}`;
@@ -401,7 +406,7 @@ function showEnd(){state='end';$('tools').classList.remove('on');
  const[rank,line]=rankOf();
  $('score').textContent=score.toLocaleString('en-US');
  $('rank').textContent=rank;
- $('stats').innerHTML=`<b>${nRyo}</b> 良 &nbsp;・&nbsp; <b>${nKa}</b> 可 &nbsp;・&nbsp; <b>${nMiss}</b> miss<br>max combo <b>${maxCombo}</b> &nbsp;・&nbsp; ${line}`;
+ $('stats').innerHTML=`<b>${nRyo}</b> 良 &nbsp;・&nbsp; <b>${nKa}</b> 可 &nbsp;・&nbsp; <b>${nMiss}</b> 不可<br>max combo <b>${maxCombo}</b> &nbsp;・&nbsp; ${line}`;
  let best=0;try{best=+localStorage.getItem('luckytaiko_best')||0;if(score>best){localStorage.setItem('luckytaiko_best',score);$('bestline').style.display='block';}}catch(e){}
  $('end').classList.remove('hidden');}
 
@@ -465,7 +470,7 @@ function frame(now){
   pumpAudio();
   /* misses */
   if(!AUTO)for(const n of chart){if(!n.judged&&st-n.t>KA){n.judged=true;nMiss++;combo=0;soul=Math.max(0,soul-.06);
-   pops.push({t:0,txt:'miss',c:'rgba(207,214,228,.7)',x:hitX(),y:laneY()-46});}}
+   pops.push({t:0,txt:'不可',c:'rgba(199,62,46,.85)',x:hitX(),y:laneY()-46});}}
   /* auto play (QA): judge directly so virtual-time frame jumps can't miss */
   if(AUTO)for(const n of chart){if(!n.judged&&n.t<=st){n.judged=true;n.hit=true;nRyo++;combo++;maxCombo=Math.max(maxCombo,combo);
    score+=300+Math.min(combo,50)*2;soul=Math.min(1,soul+.022);
